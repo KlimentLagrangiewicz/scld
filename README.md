@@ -2,15 +2,16 @@
 Simple command-line downloader
 
 ## About application
-Simple command-line downloader (scld) is elementary command line application for downloading:
- + homogeneous files from URLs with format like: URL/k.fmt, URL/(k+1).fmt, URL/(k+2).fmt, URL/..., URL/(N-1).fmt, URL/N.fmt;  
- + аrom a file that contains the addresses of the files line by line;  
- + directly by providing a full address.
+Simple command-line downloader (scld) is elementary command line application based on [curl](https://github.com/curl/curl) for downloading:
+ + homogeneous files from URLs with format like: `URL`k.fmt, `URL`(k+1).fmt, `URL`(k+2).fmt, `URL`..., `URL`(N-1).fmt, `URL`N.fmt;  
+ + from a file contained the addresses of the files line by line;  
+ + directly file by providing a full address.
 
 ## Options
- + `-r` or `--range` after that option follow arguments: part of URL, file format, first and last indexes;  
- + `-t` or `--txt` after that option follow arguments: file name with full URLs written line by line;  
- + `-f` or `--file` after that option follow full URL to douwnloding file  
+ + `-r` or `--range` after that option specify arguments: part of URL, file format, first and last indexes;  
+ + `-t` or `--txt` after that option specify arguments: file name with full URLs written line by line;  
+ + `-f` or `--file` after that option specify full URL to downloading file;  
+ + `-h` or `--help` display main information about the software and specific types of command line options.
  
 ## Clone and build
 For build project from sources you must install g++ and curl.  
@@ -39,10 +40,10 @@ If building was ok, you can find executable file in `bin` subdirectory.
 
 ## Examples
 ```
-scld -r https://www.mangaread.org/wp-content/uploads/WP-manga/data/manga_60b4a21e01c9b/11e6c5d005eb13e15cc7a6ff7dfba10b jpeg 3 17
+scld -r https://www.mangaread.org/wp-content/uploads/WP-manga/data/manga_60b4a21e01c9b/11e6c5d005eb13e15cc7a6ff7dfba10b/ jpeg 3 17
 ```
 ```
-scld -r https://mangamammy.ru/wp-content/uploads/WP-manga/c/data/manga_617b080ab1f4b/v5-ch32-234669 webp 001 031
+scld -r https://mangamammy.ru/wp-content/uploads/WP-manga/c/data/manga_617b080ab1f4b/v5-ch32-234669/ webp 001 031
 ```
 ```
 scld -f https://cs13.pikabu.ru/video/2024/08/12/1723441171223051126_a85d8f65_720x720.webm

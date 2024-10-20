@@ -8,9 +8,9 @@ std::string to_format(const int number, int diff) {
 
 std::string get_url(std::string path, int i, std::string fmt, int diff = 0) {
 	if (diff <= 0) {
-		return path + '/' + std::to_string(i) + '.' + fmt;
+		return path + std::to_string(i) + '.' + fmt;
 	}
-	return path + '/' + to_format(i, diff) + '.' + fmt;
+	return path + to_format(i, diff) + '.' + fmt;
 }
 
 
