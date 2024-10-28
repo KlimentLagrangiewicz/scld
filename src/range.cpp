@@ -31,7 +31,7 @@ std::string get_name(std::string url) {
 void download_range(std::string path, std::string fmt, std::string sfirst, std::string slast) {
 	int first = stoi(sfirst), last = stoi(slast);
 	int width = my_swap(first, last) ? slast.size() : sfirst.size();
-	#pragma omp parallel for shared(first, last) firstprivate(width, path, fmt)
+	#pragma omp parallel for shared(first, last) firstprivate(width, path, fmt) schedule(dynamic)
 	for (int i = first; i <= last; i++) {
 		int diff = width - std::to_string(i).size();
 		std::string url = get_url(path, i, fmt, diff);

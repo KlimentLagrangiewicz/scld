@@ -12,9 +12,6 @@ LDFLAGS      = -lcurl -fopenmp
 C_SOURCES    = $(wildcard $(SRCDIR)/*.c)
 CXX_SOURCES  = $(wildcard $(SRCDIR)/*.cpp)
 
-C_INCLUDES   = $(wildcard $(SRCDIR)/*.h)
-CXX_INCLUDES = $(wildcard $(SRCDIR)/*.hpp)
-
 C_OBJECTS    = $(C_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 CXX_OBJECTS  = $(CXX_SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 

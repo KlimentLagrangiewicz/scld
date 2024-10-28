@@ -38,7 +38,7 @@ std::vector<std::string> get_lines(std::string file_name) {
 
 
 void download_array_files(std::vector<std::string> array) {
-	#pragma omp parallel for firstprivate(array)
+	#pragma omp parallel for firstprivate(array) schedule(dynamic)
 	for (std::string url: array) {
 		try {
 			bool res = download_image(url.c_str());
