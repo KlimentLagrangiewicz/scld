@@ -5,11 +5,10 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
 	return fwrite(ptr, size, nmemb, stream);
 }
 
-bool download_image(const char* url) {
-	const char *outfilename = strrchr(url, '/') + 1;
+bool download_image(const char* url, const char* outfilename) {
 	CURL *curl = curl_easy_init();
 	if (curl) {
-		FILE *fp = fopen(outfilename,"wb");
+		FILE *fp = fopen(outfilename, "wb");
 		if (fp == NULL) {
 			curl_easy_cleanup(curl);
 			return false;

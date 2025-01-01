@@ -4,6 +4,8 @@ SRCDIR       = src
 OBJDIR       = obj
 BINDIR       = bin
 
+TARGET       := $(BINDIR)/$(TARGET)
+
 CFLAGS       = -Wall -O2 -I./$(SRCDIR)
 CXXFLAGS     = -Wall -O2 -fopenmp -I./$(SRCDIR)
 
@@ -16,15 +18,15 @@ C_OBJECTS    = $(C_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 CXX_OBJECTS  = $(CXX_SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 .PHONY: all
-all: remove $(BINDIR)/$(TARGET) clean
+all: remove $(TARGET) clean
 
-$(BINDIR)/$(TARGET): $(C_OBJECTS) $(CXX_OBJECTS) $(BINDIR)
-	g++ $(CXX_OBJECTS) $(C_OBJECTS)  $(LDFLAGS) -o $@
+$(TARGET): $(C_OBJECTS) $(CXX_OBJECTS) $(BINDIR)
+	g++ $(CXX_OBJECTS) $(C_OBJECTS) $(LDFLAGS) -o $@
 
 windows: remove build_win clean
 
 build_win: $(C_OBJECTS) $(CXX_OBJECTS) $(BINDIR)
-	g++ $(CXX_OBJECTS) $(C_OBJECTS)  $(LDFLAGS) -o $(BINDIR)/$(TARGET).exe
+	g++ $(CXX_OBJECTS) $(C_OBJECTS) $(LDFLAGS) -o $(TARGET).exe
 
 $(CXX_OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	g++ $(CXXFLAGS) -c $< -o $@
@@ -39,7 +41,7 @@ $(BINDIR):
 	mkdir -p $@
 
 clean:
-	rm -rf $(C_OBJECTS) $(CXX_OBJECTS) $(OBJDIR)
+	$(RM) -rf $(C_OBJECTS) $(CXX_OBJECTS) $(OBJDIR)
 	
 remove:
-	rm -rf $(C_OBJECTS) $(CXX_OBJECTS) $(OBJDIR) $(BINDIR)
+	$(RM) -rf $(C_OBJECTS) $(CXX_OBJECTS) $(OBJDIR) $(TARGET).exe $(TARGET) $(BINDIR)

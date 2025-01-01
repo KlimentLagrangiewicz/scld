@@ -1,15 +1,13 @@
-#include <iostream>
 #include <iomanip>
 #include <string>
 #include <sstream>
-#include <filesystem>
 #include <omp.h>
 
-#include "downloader.h"
+#include "cppdownloader.hpp"
 
 
-std::string to_format(const int number, int diff);
-std::string get_url(std::string path, int i, std::string fmt, int diff);
-bool my_swap(int &a, int &b);
-std::string get_name(std::string url);
-void download_range(std::string path, std::string fmt, std::string sfirst, std::string slast);
+std::string to_format(const int number);
+std::string getURL(const std::string path, const int i, const std::string fmt, int diff);
+bool mySwap(int &a, int &b);
+std::string getName(const std::string url);
+void downloadFromRange(const std::string path, const std::string fmt, const std::string sfirst, const std::string slast);
