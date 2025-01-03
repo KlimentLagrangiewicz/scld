@@ -26,8 +26,15 @@ void fileDownload(const std::string fileURL) {
 		try {
 			if (std::filesystem::remove(oFileName))
 				std::cout << "Artefact file " << oFileName << " deleted\n";
-		} catch(const std::filesystem::filesystem_error& err) {
+		} catch (const std::filesystem::filesystem_error& err) {
 			std::cout << "Filesystem error: " << err.what() << '\n';
 		}
+	}
+}
+
+void downloadFromStringArray(const std::vector<std::string> array) {
+	#pragma omp parallel for firstprivate(array) schedule(dynamic)
+	for (std::string url: array) {
+		fileDownload(url);
 	}
 }

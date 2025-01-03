@@ -13,7 +13,6 @@ std::string getURL(const std::string path, const int i, const std::string fmt, i
 	return path + to_format(i, diff) + '.' + fmt;
 }
 
-
 bool mySwap(int &a, int &b) {
 	if (a > b) {
 		int  buf = a;
@@ -27,10 +26,13 @@ bool mySwap(int &a, int &b) {
 void downloadFromRange(const std::string path, const std::string fmt, const std::string sfirst, const std::string slast) {
 	int first = stoi(sfirst), last = stoi(slast);
 	int width = mySwap(first, last) ? slast.size() : sfirst.size();
-	#pragma omp parallel for shared(first, last) firstprivate(width, path, fmt) schedule(dynamic)
-	for (int i = first; i <= last; i++) {
-		int diff = width - std::to_string(i).size();
-		std::string url = getURL(path, i, fmt, diff);
-		fileDownload(url);
-	}
+	std::vector<std::string> vec(last - first + 1);
+	int i = first;
+	std::generate(vec.begin(), vec.end(), [width, &i, fmt, path] {
+		const std::string str = getURL(path, i, fmt, width - std::to_string(i).size());
+		i++;
+		return str;
+	});
+	downloadFromStringArray(vec);
+	vec.clear();
 }

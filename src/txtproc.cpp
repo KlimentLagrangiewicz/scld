@@ -36,14 +36,6 @@ std::vector<std::string> getStringVec(const std::string file_name) {
 	return strVec;
 }
 
-
-void downloadFromStringArray(const std::vector<std::string> array) {
-	#pragma omp parallel for firstprivate(array) schedule(dynamic)
-	for (std::string url: array) {
-		fileDownload(url);
-	}
-}
-
 void downloadFromFile(const std::string file_name) {
 	std::vector<std::string> vec = getStringVec(file_name);
 	downloadFromStringArray(vec);

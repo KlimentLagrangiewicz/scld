@@ -21,18 +21,18 @@ CXX_OBJECTS  = $(CXX_SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 all: remove $(TARGET) clean
 
 $(TARGET): $(C_OBJECTS) $(CXX_OBJECTS) $(BINDIR)
-	g++ $(CXX_OBJECTS) $(C_OBJECTS) $(LDFLAGS) -o $@
+	$(CXX) $(CXX_OBJECTS) $(C_OBJECTS) $(LDFLAGS) -o $@
 
 windows: remove build_win clean
 
 build_win: $(C_OBJECTS) $(CXX_OBJECTS) $(BINDIR)
-	g++ $(CXX_OBJECTS) $(C_OBJECTS) $(LDFLAGS) -o $(TARGET).exe
+	$(CXX) $(CXX_OBJECTS) $(C_OBJECTS) $(LDFLAGS) -o $(TARGET).exe
 
 $(CXX_OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	g++ $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(C_OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c $(OBJDIR)
-	g++ $(CFLAGS) -c $< -o $@
+	$(CXX) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR):
 	mkdir -p $@

@@ -1,7 +1,7 @@
+#include <algorithm>
 #include <iomanip>
 #include <string>
 #include <sstream>
-#include <omp.h>
 
 #include "cppdownloader.hpp"
 
