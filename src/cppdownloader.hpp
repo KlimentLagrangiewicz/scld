@@ -2,7 +2,8 @@
 #include <string>
 #include <vector>
 #include <filesystem>
-#include <omp.h>
+#include <algorithm>
+#include <execution>
 
 #include "downloader.h"
 

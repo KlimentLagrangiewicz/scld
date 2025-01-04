@@ -7,9 +7,9 @@ BINDIR       = bin
 TARGET       := $(BINDIR)/$(TARGET)
 
 CFLAGS       = -Wall -O2 -I./$(SRCDIR)
-CXXFLAGS     = -Wall -O2 -fopenmp -I./$(SRCDIR)
+CXXFLAGS     = -Wall -O2 -I./$(SRCDIR)
 
-LDFLAGS      = -lcurl -fopenmp
+LDFLAGS      = -lcurl -ltbb
 
 C_SOURCES    = $(wildcard $(SRCDIR)/*.c)
 CXX_SOURCES  = $(wildcard $(SRCDIR)/*.cpp)

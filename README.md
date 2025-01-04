@@ -17,11 +17,11 @@ Simple command-line downloader (scld) is elementary command line application bas
 For build project from sources you must install g++ and curl.  
 For OS based on Debian you may do that with APT:  
 ```
-sudo apt-get install gcc g++ libcurl4-openssl-dev git make
+sudo apt-get install gcc g++ libcurl4-openssl-dev git make libtbb-dev
 ```
 If you use Windows OS you may do that with [msys2](https://www.msys2.org/):  
 ```
-pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-curl git make
+pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-curl git make mingw-w64-x86_64-tbb
 ```
 Cloning project and changing current directory:  
 ```

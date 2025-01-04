@@ -33,8 +33,5 @@ void fileDownload(const std::string fileURL) {
 }
 
 void downloadFromStringArray(const std::vector<std::string> array) {
-	#pragma omp parallel for firstprivate(array) schedule(dynamic)
-	for (std::string url: array) {
-		fileDownload(url);
-	}
+	std::for_each(std::execution::par_unseq, array.begin(), array.end(), fileDownload);
 }
