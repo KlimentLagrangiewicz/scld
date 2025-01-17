@@ -10,6 +10,7 @@ CFLAGS       = -Wall -O2 -I./$(SRCDIR)
 CXXFLAGS     = -Wall -O2 -I./$(SRCDIR)
 
 LDFLAGS      = -lcurl -ltbb
+WINLDFLAGS   = -l:libtbb12.dll.a -lcurl
 
 C_SOURCES    = $(wildcard $(SRCDIR)/*.c)
 CXX_SOURCES  = $(wildcard $(SRCDIR)/*.cpp)
@@ -26,7 +27,7 @@ $(TARGET): $(C_OBJECTS) $(CXX_OBJECTS) $(BINDIR)
 windows: remove build_win clean
 
 build_win: $(C_OBJECTS) $(CXX_OBJECTS) $(BINDIR)
-	$(CXX) $(CXX_OBJECTS) $(C_OBJECTS) $(LDFLAGS) -o $(TARGET).exe
+	$(CXX) $(CXX_OBJECTS) $(C_OBJECTS) $(WINLDFLAGS) -o $(TARGET).exe
 
 $(CXX_OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -42,6 +43,6 @@ $(BINDIR):
 
 clean:
 	$(RM) -rf $(C_OBJECTS) $(CXX_OBJECTS) $(OBJDIR)
-	
+
 remove:
 	$(RM) -rf $(C_OBJECTS) $(CXX_OBJECTS) $(OBJDIR) $(TARGET).exe $(TARGET) $(BINDIR)
