@@ -11,7 +11,7 @@ std::string getOutputFileName(const std::string inputFileName) {
 }
 
 bool cppDownloadFile(const std::string fileURL, const std::string oFileName) {
-	return download_image(fileURL.c_str(), oFileName.c_str());
+	return download_file(fileURL.c_str(), oFileName.c_str());
 }
 
 std::string getName(const std::string url) {

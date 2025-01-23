@@ -5,8 +5,9 @@
 #include <algorithm>
 #include <execution>
 
+extern "C"{
 #include "downloader.h"
-
+}
 
 std::string getOutputFileName(const std::string inputFileName);
 bool cppDownloadFile(const std::string fileURL, const std::string oFileName);
