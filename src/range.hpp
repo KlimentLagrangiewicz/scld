@@ -1,7 +1,8 @@
-#include <algorithm>
 #include <iomanip>
 #include <string>
 #include <sstream>
+#include <ranges>
+#include <tbb/parallel_for_each.h>
 
 #include "cppdownloader.hpp"
 

@@ -26,13 +26,9 @@ bool mySwap(int &a, int &b) {
 void downloadFromRange(const std::string path, const std::string fmt, const std::string sfirst, const std::string slast) {
 	int first = stoi(sfirst), last = stoi(slast);
 	int width = mySwap(first, last) ? slast.size() : sfirst.size();
-	std::vector<std::string> vec(last - first + 1);
-	int i = first;
-	std::generate(vec.begin(), vec.end(), [width, &i, fmt, path] {
-		const std::string str = getURL(path, i, fmt, width - std::to_string(i).size());
-		i++;
-		return str;
+	const std::ranges::iota_view view = std::views::iota(first, last + 1);
+	tbb::parallel_for_each(view.begin(), view.end(), [width, fmt, path] (const int i) {
+		const std::string url = getURL(path, i, fmt, width - std::to_string(i).size());
+		fileDownload(url);
 	});
-	downloadFromStringArray(vec);
-	vec.clear();
 }

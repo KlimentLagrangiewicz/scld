@@ -7,7 +7,7 @@ BINDIR       = bin
 TARGET       := $(BINDIR)/$(TARGET)
 
 CFLAGS       = -Wall -O2 -I./$(SRCDIR)
-CXXFLAGS     = -Wall -O2 -I./$(SRCDIR)
+CXXFLAGS     = -Wall -O2 -I./$(SRCDIR) -std=c++20
 
 LDFLAGS      = -lcurl -ltbb
 WINLDFLAGS   = -l:libtbb12.dll.a -lcurl
