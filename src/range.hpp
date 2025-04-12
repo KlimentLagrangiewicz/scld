@@ -6,7 +6,6 @@
 
 
 std::string to_format(const int number, const int diff = 0);
-std::string getURL(const std::string path, const int i, const std::string fmt, const int diff = 0);
+std::string getURL(const std::string &path, const int i, const std::string &fmt, const int diff = 0);
 bool mySwap(int &a, int &b);
-std::string getName(const std::string url);
-void downloadFromRange(const std::string path, const std::string fmt, const std::string sfirst, const std::string slast);
+void downloadFromRange(const std::string &path, const std::string &fmt, const std::string &sfirst, const std::string &slast);
