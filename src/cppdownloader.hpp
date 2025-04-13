@@ -2,8 +2,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
-#include <tbb/parallel_for_each.h>
-#include <tbb/spin_mutex.h>
+#include <oneapi/tbb.h>
 
 extern "C"{
 #include "downloader.h"

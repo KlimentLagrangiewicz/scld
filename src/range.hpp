@@ -1,6 +1,6 @@
 #include <string>
 #include <ranges>
-#include <tbb/parallel_for_each.h>
+#include <oneapi/tbb.h>
 
 #include "cppdownloader.hpp"
 

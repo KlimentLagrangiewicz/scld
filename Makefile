@@ -10,7 +10,7 @@ CFLAGS       = -Wall -O2 -I./$(SRCDIR)
 CXXFLAGS     = -Wall -O2 -I./$(SRCDIR) -std=c++20
 
 LDFLAGS      = -lcurl -ltbb
-WINLDFLAGS   = -l:libtbb12.dll.a -lcurl
+WINLDFLAGS   = -lcurl -l:libtbb12.dll.a
 
 C_SOURCES    = $(wildcard $(SRCDIR)/*.c)
 CXX_SOURCES  = $(wildcard $(SRCDIR)/*.cpp)
