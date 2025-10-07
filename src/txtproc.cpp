@@ -1,6 +1,6 @@
 #include "txtproc.hpp"
 
-size_t getNumLines(const std::string &file_name) {
+static size_t getNumLines(const std::string &file_name) {
 	std::fstream fl;
 	fl.open(file_name, std::ios_base::in);
 	if (!fl.is_open()) {
@@ -13,7 +13,7 @@ size_t getNumLines(const std::string &file_name) {
 	return res;
 }
 
-std::vector<std::string> getStringVec(const std::string &file_name) {
+static std::vector<std::string> getStringVec(const std::string &file_name) {
 	size_t s = getNumLines(file_name);
 	if (s == 0) {
 		std::cout << "File \"" << file_name << "\" is empty.\n";

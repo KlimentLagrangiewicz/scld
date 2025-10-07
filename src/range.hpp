@@ -1,11 +1,19 @@
+#ifndef RANGE_HPP_
+#define RANGE_HPP_
+
+#if defined(_WIN32) || defined(_WIN64)
+	#ifndef WIN32_LEAN_AND_MEAN
+	#define WIN32_LEAN_AND_MEAN
+	#include <winsock2.h>
+	#endif
+#endif
+
 #include <string>
-#include <ranges>
 #include <oneapi/tbb.h>
 
 #include "cppdownloader.hpp"
 
 
-std::string to_format(const int number, const int diff = 0);
-std::string getURL(const std::string &path, const int i, const std::string &fmt, const int diff = 0);
-bool mySwap(int &a, int &b);
 void downloadFromRange(const std::string &path, const std::string &fmt, const std::string &sfirst, const std::string &slast);
+
+#endif

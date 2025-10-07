@@ -1,3 +1,13 @@
+#ifndef TXTPROC_HPP_
+#define TXTPROC_HPP_
+
+#if defined(_WIN32) || defined(_WIN64)
+	#ifndef WIN32_LEAN_AND_MEAN
+	#define WIN32_LEAN_AND_MEAN
+	#include <winsock2.h>
+	#endif
+#endif
+
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -7,6 +17,6 @@
 #include "cppdownloader.hpp"
 
 
-size_t getNumLines(const std::string &file_name);
-std::vector<std::string> getStringVec(const std::string &file_name);
 void downloadFromFile(const std::string &file_name);
+
+#endif

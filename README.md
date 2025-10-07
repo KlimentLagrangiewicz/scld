@@ -2,8 +2,8 @@
 Simple command-line downloader
 
 ## About application
-Simple command-line downloader (scld) is elementary command line application based on [curl](https://github.com/curl/curl) for downloading:
- + homogeneous files from URLs with format like: `URL`k.fmt, `URL`(k+1).fmt, `URL`(k+2).fmt, `URL`..., `URL`(N-1).fmt, `URL`N.fmt;  
+Simple command-line downloader (scld) is elementary command line application based on [Boost.Beast](https://github.com/boostorg/beast) for downloading:
+ + homogeneous files from URLs with format like: `shared URL part`k.fmt, `shared URL part`(k+1).fmt, `shared URL part`(k+2).fmt, `shared URL part`..., `shared URL part`(N-1).fmt, `shared URL part`N.fmt;  
  + from a file contained the addresses of the files line by line;  
  + directly file by providing a full address.
 
@@ -14,14 +14,14 @@ Simple command-line downloader (scld) is elementary command line application bas
  + `-h` or `--help` display main information about the software and specific types of command line options.
 
 ## Clone and build
-For build project from sources you must install g++ and curl.  
+For build project from sources you must install Make, g++, OpenSSL, oneTBB and Boost.  
 For OS based on Debian you may do that with APT:  
 ```
-sudo apt-get install gcc g++ libcurl4-openssl-dev git make libtbb-dev
+sudo apt-get install git make g++ openssl libssl-dev libtbb-dev libboost-all-dev
 ```
 If you use Windows OS you may do that with [msys2](https://www.msys2.org/):  
 ```
-pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-curl git make mingw-w64-x86_64-tbb
+pacman -S git make mingw-w64-x86_64-gcc mingw-w64-x86_64-openssl mingw-w64-x86_64-tbb mingw-w64-x86_64-boost mingw-w64-x86_64-asio
 ```
 Cloning project and changing current directory:  
 ```
@@ -47,6 +47,6 @@ scld -f https://cs13.pikabu.ru/video/2024/08/12/1723441171223051126_a85d8f65_720
 ```
 
 ### TODO list:
-- [ ] Improving handling of command line arguments;
-- [ ] Replacing curl with boost.asio in the project;
+- [ ] Improving handling of command line arguments.
+- [x] Replacing curl with Boost.Beast in the project.
 - [ ] Adding new options.

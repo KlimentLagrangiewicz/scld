@@ -1,6 +1,12 @@
+# Compiled binaries
 *.exe
 *.o
 *.out
+*.obj
+*.dll
+*.a
+*.so
+*.dylib
 
 /bin/
 /obj/

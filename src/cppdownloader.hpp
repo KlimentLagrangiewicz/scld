@@ -1,16 +1,22 @@
+#ifndef CPPDOWNLOADER_HPP_
+#define CPPDOWNLOADER_HPP_
+
+#if defined(_WIN32) || defined(_WIN64)
+	#ifndef WIN32_LEAN_AND_MEAN
+	#define WIN32_LEAN_AND_MEAN
+	#include <winsock2.h>
+	#endif
+#endif
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <filesystem>
 #include <oneapi/tbb.h>
 
-extern "C"{
-#include "downloader.h"
-}
+#include "downloader.hpp"
 
-std::string getOutputFileName(const std::string &inputFileName);
-bool cppDownloadFile(const std::string &fileURL, const std::string &oFileName);
-std::string getName(const std::string &url);
-void printError(const std::string &fileURL, const std::string &oFileName);
 void fileDownload(const std::string &fileURL);
 void downloadFromStringArray(const std::vector<std::string> &array);
+
+#endif

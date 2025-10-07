@@ -1,7 +1,7 @@
 #include "cppdownloader.hpp"
 
 
-std::string getOutputFileName(const std::string &inputFileName) {
+static std::string getOutputFileName(const std::string &inputFileName) {
 	if (!std::filesystem::exists(inputFileName)) return inputFileName;
 	const std::string::size_type dotPosition = inputFileName.rfind('.');
 	const std::string base = inputFileName.substr(0, dotPosition) + " (", fmt = ")." + inputFileName.substr(dotPosition + 1);
@@ -10,18 +10,18 @@ std::string getOutputFileName(const std::string &inputFileName) {
 	return base + std::to_string(i) + fmt;
 }
 
-bool cppDownloadFile(const std::string &fileURL, const std::string &oFileName) {
-	return download_file(fileURL.c_str(), oFileName.c_str());
+static inline bool cppDownloadFile(const std::string &fileURL, const std::string &oFileName) {
+	return download_file(fileURL, oFileName);
 }
 
-std::string getName(const std::string &url) {
+static inline std::string getName(const std::string &url) {
 	return url.substr(url.rfind('/') + 1);
 }
 
-void printError(const std::string &fileURL, const std::string &oFileName) {
+static void printError(const std::string &fileURL, const std::string &oFileName) {
 	std::cout << "Error during downloading file " << oFileName << " from site: " << fileURL << '\n';
 	try {
-		if (std::filesystem::remove(oFileName))
+		if (const bool fexists = std::filesystem::exists(oFileName); fexists && std::filesystem::remove(oFileName))
 			std::cout << "Artefact file " << oFileName << " deleted\n";
 	} catch (const std::filesystem::filesystem_error& err) {
 		std::cout << "Filesystem error: " << err.what() << '\n';
@@ -29,8 +29,8 @@ void printError(const std::string &fileURL, const std::string &oFileName) {
 }
 
 void fileDownload(const std::string &fileURL) {
-	const std::string oFileName = getOutputFileName(getName(fileURL));
-	if (!cppDownloadFile(fileURL, oFileName)) {
+	const std::string &oFileName = getOutputFileName(getName(fileURL));
+	if (cppDownloadFile(fileURL, oFileName)) {
 		static tbb::spin_mutex mtx;
 		tbb::spin_mutex::scoped_lock lock(mtx);
 		printError(fileURL, oFileName);
