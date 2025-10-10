@@ -33,3 +33,25 @@ void downloadFromRange(const std::string &path, const std::string &fmt, const st
 		}
 	);
 }
+
+
+void downloadFromRange(const std::string &path, const std::vector<std::string> &fmts, const std::string &sfirst, const std::string &slast) {
+	if (fmts.empty()) throw std::runtime_error("fmts vector can't be empty");
+	if (fmts.size() < 2) {
+		downloadFromRange(path, fmts[0], sfirst, slast);
+	} else {
+		int first = std::stoi(sfirst), last = std::stoi(slast);
+		const int width = mySwap(first, last) ? slast.size() : sfirst.size();
+		tbb::parallel_for(
+			tbb::blocked_range<int>(first, last + 1),
+			[&width, &fmts, &path](const tbb::blocked_range<int>& range) {
+				for (auto i = range.begin(); i != range.end(); ++i) {
+					for (const auto & fmt: fmts) {
+						const std::string url = getURL(path, i, fmt, width - std::to_string(i).size());
+						fileDownloadSilently(url);
+					}
+				}
+			}
+		);
+	}
+}

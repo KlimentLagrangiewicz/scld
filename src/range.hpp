@@ -9,11 +9,14 @@
 #endif
 
 #include <string>
+#include <vector>
 #include <oneapi/tbb.h>
+#include <stdexcept>
 
 #include "cppdownloader.hpp"
 
 
 void downloadFromRange(const std::string &path, const std::string &fmt, const std::string &sfirst, const std::string &slast);
+void downloadFromRange(const std::string &path, const std::vector<std::string> &fmts, const std::string &sfirst, const std::string &slast);
 
 #endif

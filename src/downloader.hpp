@@ -19,6 +19,8 @@
 
 #include <iostream>
 #include <string>
+#include <stdexcept>
+
 
 namespace beast = boost::beast;
 namespace http  = beast::http;

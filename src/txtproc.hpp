@@ -13,6 +13,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <stdexcept>
 
 #include "cppdownloader.hpp"
 

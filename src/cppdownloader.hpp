@@ -17,6 +17,7 @@
 #include "downloader.hpp"
 
 void fileDownload(const std::string &fileURL);
+void fileDownloadSilently(const std::string &fileURL);
 void downloadFromStringArray(const std::vector<std::string> &array);
 
 #endif

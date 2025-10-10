@@ -28,6 +28,10 @@ static void printError(const std::string &fileURL, const std::string &oFileName)
 	}
 }
 
+static inline void deleteingFile(const std::string &fn) {
+	if (std::filesystem::exists(fn)) std::filesystem::remove(fn);
+}
+
 void fileDownload(const std::string &fileURL) {
 	const std::string &oFileName = getOutputFileName(getName(fileURL));
 	if (cppDownloadFile(fileURL, oFileName)) {
@@ -36,6 +40,16 @@ void fileDownload(const std::string &fileURL) {
 		printError(fileURL, oFileName);
 	}
 }
+
+void fileDownloadSilently(const std::string &fileURL) {
+	const std::string &oFileName = getOutputFileName(getName(fileURL));
+	if (cppDownloadFile(fileURL, oFileName)) {
+		//static tbb::spin_mutex mtx;
+		//tbb::spin_mutex::scoped_lock lock(mtx);
+		deleteingFile(oFileName);
+	}
+}
+
 
 void downloadFromStringArray(const std::vector<std::string> &array) {
 	tbb::parallel_for_each(array.begin(), array.end(), fileDownload);

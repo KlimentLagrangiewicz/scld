@@ -7,10 +7,11 @@
 
 #include <iostream>
 #include <string>
-#include <exception>
+#include <stdexcept>
 
 #include "range.hpp"
 #include "txtproc.hpp"
+#include "argparser.hpp"
 
 #define help_txt "Simple command-line downloader (scld) is elementary command line application for downloading:\n\
 1. Homogeneous files from URLs with format like:\
@@ -36,8 +37,9 @@ int main(int argc, char **argv) {
 				std::cout << "Not enough parameters.\n";
 				std::exit(1);
 			}
-			const std::string path(*(argv + 2)), fmt(*(argv + 3));
-			downloadFromRange(path, fmt, std::string(argv[4]), std::string(argv[5]));
+			const std::string path(*(argv + 2));
+			const std::vector<std::string> fmts = getFormats(*(argv + 3));
+			downloadFromRange(path, fmts, std::string(argv[4]), std::string(argv[5]));
 		} else if (flag == "-f" || flag == "--file") {
 			if (argc < 3) {
 				std::cout << "Not enough parameters.\n";
