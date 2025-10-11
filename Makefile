@@ -8,7 +8,7 @@ TARGET       := $(BINDIR)/$(TARGET)
 
 CXX          = g++
 
-CXXFLAGS     = -Wall -O3 -I./$(SRCDIR)
+CXXFLAGS     = -Wall -std=c++20 -O3 -I./$(SRCDIR)
 
 LDFLAGS      = -ltbb -lboost_system -lssl -lcrypto -lpthread
 WINLDFLAGS   = -l:libtbb12.dll.a -l:libboost_filesystem-mt.dll.a -l:libssl.dll.a -l:libcrypto.dll.a -lws2_32 -lwsock32

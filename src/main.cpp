@@ -9,6 +9,7 @@
 #include <string>
 #include <stdexcept>
 
+
 #include "range.hpp"
 #include "txtproc.hpp"
 #include "argparser.hpp"
@@ -22,47 +23,36 @@ Options:\n\
 -r or --range\tAfter that option specify arguments: shared part of URL, file format, first and last indexes;\n\
 -t or --txt\tAfter that option specify arguments: filename with full URLs written line by line;\n\
 -f or --file\tAfter that option specify full URL to downloading file;\n\
--h or --help\tDisplay main information about the software and specific types of command line options."
+-h or --help\tDisplay main information about the software and specific types of command line options.\n"
 
 
-int main(int argc, char **argv) {
-	if (argc < 2) {
-		std::cout << "Not enough parameters.\n";
-		std::exit(1);
-	}
+int main(int argc, char **argv)
+{
 	try {
+		if (argc < 2) throw std::runtime_error("Not enough parameters.\n");
 		const std::string flag(*(argv + 1));
 		if (flag == "-r" || flag == "--range") {
-			if (argc < 5) {
-				std::cout << "Not enough parameters.\n";
-				std::exit(1);
-			}
-			const std::string path(*(argv + 2));
+			if (argc < 5) throw std::runtime_error("Not enough parameters for \"range\" option.\n");
+			
 			const std::vector<std::string> fmts = getFormats(*(argv + 3));
-			downloadFromRange(path, fmts, std::string(argv[4]), std::string(argv[5]));
+			downloadFromRange(*(argv + 2), fmts, std::string(argv[4]), std::string(argv[5]));
 		} else if (flag == "-f" || flag == "--file") {
-			if (argc < 3) {
-				std::cout << "Not enough parameters.\n";
-				std::exit(1);
-			}
-			const std::string url(*(argv + 2));
-			fileDownload(url);
+			if (argc < 3) throw std::runtime_error("Not enough parameters for \"file\" option.\n");
+			
+			const auto &vec = getFilesURLs(const_cast<const char**>(argv), 2, argc);
+			downloadFromStringArray(vec);
 		} else if (flag == "-t" || flag == "--txt") {
-			if (argc < 3) {
-				std::cout << "Not enough parameters\n";
-				std::exit(1);
-			}
-			const std::string file_name(*(argv + 2));
-			downloadFromFile(file_name);
-		} else if (flag == "-h" || flag == "--help"){		
-			std::cout<< help_txt << '\n';
+			if (argc < 3) throw std::runtime_error("Not enough parameters for \"txt\" option.\n");
+			
+			downloadFromFile(*(argv + 2));
+		} else if (flag == "-h" || flag == "--help"){
+			std::cout<< help_txt;
 		} else {
-			std::cout << "Unknown option \"" + flag + "\" \n";
+			throw std::runtime_error("Unknown option \"" + flag + "\" \n");
 		}
 	} catch (const std::exception& e) {
 		std::cerr << "Error occurred: " << e.what() << std::endl;
 	} catch (...) {
-		std::cout << "Something went wrong\n"; 
+		std::cerr << "Something went wrong\n"; 
 	}
-	return 0;
 }

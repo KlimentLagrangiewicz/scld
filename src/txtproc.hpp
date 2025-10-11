@@ -9,11 +9,11 @@
 #endif
 
 #include <algorithm>
-#include <iostream>
 #include <string>
 #include <fstream>
 #include <vector>
 #include <stdexcept>
+#include <unordered_set>
 
 #include "cppdownloader.hpp"
 

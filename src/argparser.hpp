@@ -8,12 +8,15 @@
 	#endif
 #endif
 
+#include <string_view>
+#include <unordered_set>
 #include <string>
 #include <vector>
 #include <algorithm>
 
 
-std::vector<std::string> getFormats(const std::string & arg);
+std::vector<std::string> getFormats(const std::string_view arg);
 std::vector<std::string> getFormats(const char *arg);
+std::vector<std::string> getFilesURLs(const char **argv, const int begin, const int end);
 
 #endif

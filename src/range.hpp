@@ -8,10 +8,12 @@
 	#endif
 #endif
 
+#include <string_view>
 #include <string>
 #include <vector>
 #include <oneapi/tbb.h>
 #include <stdexcept>
+#include <limits>
 
 #include "cppdownloader.hpp"
 

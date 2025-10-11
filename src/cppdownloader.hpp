@@ -8,16 +8,17 @@
 	#endif
 #endif
 
-#include <iostream>
 #include <string>
-#include <vector>
+#include <span>
 #include <filesystem>
 #include <oneapi/tbb.h>
 
 #include "downloader.hpp"
 
 void fileDownload(const std::string &fileURL);
+void fileDownload(const std::string &fileURL, const int n, const int maxWidth, const std::string & fmt);
 void fileDownloadSilently(const std::string &fileURL);
-void downloadFromStringArray(const std::vector<std::string> &array);
+void fileDownloadSilently(const std::string &fileURL, const int n, const int maxWidth, const std::string & fmt);
+void downloadFromStringArray(const std::span<const std::string> array);
 
 #endif
