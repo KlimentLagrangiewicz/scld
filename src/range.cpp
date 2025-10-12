@@ -4,12 +4,12 @@
 static inline std::string getURL(std::string_view path, const int i, std::string_view fmt, const int diff) {
 	std::string result;
 	if (diff <= 0) {
-		result.reserve(path.size() + 11 + fmt.size() + 1);
+		result.reserve(path.size() + 11 + fmt.size() + 2);
 		result.append(path);
 		result.append(std::to_string(i));
 	} else {
 		const auto num_str = std::to_string(i);
-		result.reserve(path.size() + diff + num_str.size() + fmt.size() + 1);
+		result.reserve(path.size() + diff + num_str.size() + fmt.size() + 2);
 		result.append(path);
 		result.append(diff, '0');
 		result.append(num_str);
@@ -29,25 +29,6 @@ static inline bool mySwap(int &a, int &b) {
 	}
 	return false;
 }
-
-
-/*
-static inline int my_abs(const int n) {
-	return n < 0 ? -n : n;
-}
-
-static int getIntWidth(int n) {
-	if (n == 0) return 1;
-	int i = n < 0 ? 1 : 0;
-	n = my_abs(n);
-	while (n) {
-		++i;
-		n /= 10;
-	}
-	return i;
-}
-*/
-
 
 static inline int getIntWidth(int n) {
 	if (n == 0) return 1;

@@ -8,6 +8,9 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include <span>
+#include <algorithm>
+
 
 
 #include "range.hpp"
@@ -25,7 +28,6 @@ Options:\n\
 -f or --file\tAfter that option specify full URL to downloading file;\n\
 -h or --help\tDisplay main information about the software and specific types of command line options.\n"
 
-
 int main(int argc, char **argv)
 {
 	try {
@@ -36,15 +38,23 @@ int main(int argc, char **argv)
 			
 			const std::vector<std::string> fmts = getFormats(*(argv + 3));
 			downloadFromRange(*(argv + 2), fmts, std::string(argv[4]), std::string(argv[5]));
+			
 		} else if (flag == "-f" || flag == "--file") {
 			if (argc < 3) throw std::runtime_error("Not enough parameters for \"file\" option.\n");
 			
-			const auto &vec = getFilesURLs(const_cast<const char**>(argv), 2, argc);
-			downloadFromStringArray(vec);
+			size_t pos;
+			const auto &vec = getFilesURLs(const_cast<const char**>(argv), 2, argc, pos);
+			
+			const auto &vec_s = vec.size();
+			
+			downloadFromStringArray(std::span<const std::string>(vec.data(), std::min(pos, vec_s)));
+			if (pos < vec_s) downloadFromStringArraySerialy(std::span<const std::string>(vec.data() + pos, vec_s));
+			
 		} else if (flag == "-t" || flag == "--txt") {
 			if (argc < 3) throw std::runtime_error("Not enough parameters for \"txt\" option.\n");
 			
 			downloadFromFile(*(argv + 2));
+			
 		} else if (flag == "-h" || flag == "--help"){
 			std::cout<< help_txt;
 		} else {

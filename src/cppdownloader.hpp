@@ -12,13 +12,17 @@
 #include <span>
 #include <filesystem>
 #include <oneapi/tbb.h>
+#include <charconv>
+#include <array>
 
 #include "downloader.hpp"
 
+std::string getName(const std::string &url);
 void fileDownload(const std::string &fileURL);
 void fileDownload(const std::string &fileURL, const int n, const int maxWidth, const std::string & fmt);
 void fileDownloadSilently(const std::string &fileURL);
 void fileDownloadSilently(const std::string &fileURL, const int n, const int maxWidth, const std::string & fmt);
 void downloadFromStringArray(const std::span<const std::string> array);
+void downloadFromStringArraySerialy(const std::span<const std::string> array);
 
 #endif

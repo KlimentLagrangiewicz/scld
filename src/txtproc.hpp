@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <string>
+#include <span>
 #include <fstream>
 #include <vector>
 #include <stdexcept>

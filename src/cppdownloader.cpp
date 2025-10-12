@@ -10,53 +10,89 @@ static std::string getOutputFileName(const std::string &inputFileName) {
 	return base + std::to_string(i) + fmt;
 }
 
-
-static std::string getOutputFileName(const int n, const int maxWidth, const std::string & fmt) {
+static std::string getOutputFileName(const int n, const int maxWidth, const std::string& fmt) {
 	const std::string n_str = std::to_string(n);
-	
 	const auto n_size = n_str.size();
 	const auto max_width = static_cast<std::string::size_type>(maxWidth);
 	
-	std::string inputFileName;
+	const auto base_size = (n_size > max_width ? n_size : max_width) + fmt.size() + 1;
+	
+	std::string base_name;
+	base_name.reserve(base_size);
+	
 	if (n_size > max_width) {
-		inputFileName.reserve(n_size + fmt.size() + 1);
-		inputFileName.append(n_str);
-		inputFileName.push_back('.');
-		inputFileName.append(fmt);
+		base_name.append(n_str);
 	} else {
-		inputFileName.reserve(max_width + fmt.size() + 1);
-		inputFileName.append(max_width - n_size, '0');
-		inputFileName.append(n_str);
-		inputFileName.push_back('.');
-		inputFileName.append(fmt);
+		base_name.append(max_width - n_size, '0');
+		base_name.append(n_str);
+	}
+	base_name.push_back('.');
+	base_name.append(fmt);
+	
+	if (!std::filesystem::exists(base_name)) return base_name;
+	
+	const auto prefix_size = n_size > max_width ? n_size : max_width;
+	std::string prefix;
+	prefix.reserve(prefix_size + 3);
+	prefix.append(base_name, 0, prefix_size);
+	prefix.append(" (");
+	
+	const auto suffix_size = fmt.size() + 3;
+	const auto total_base_size = prefix.size() + suffix_size;
+	
+	std::array<char, 21> num_buf{};
+	
+	for (std::string::size_type i = 1; i < std::numeric_limits<std::string::size_type>::max(); ++i) {
+		std::string candidate;
+		candidate.reserve(total_base_size + 14);
+		candidate.append(prefix);
+		
+		auto [ptr, ec] = std::to_chars(num_buf.data(), num_buf.data() + num_buf.size(), i);
+		if (ec == std::errc()) {
+			candidate.append(num_buf.data(), ptr);
+		} else {
+			candidate.append(std::to_string(i));
+		}
+		
+		candidate.append(").");
+		candidate.append(fmt);
+		
+		if (!std::filesystem::exists(candidate)) return candidate;
 	}
 	
-	if (!std::filesystem::exists(inputFileName)) return inputFileName;
-	
-	const auto dotPosition = n_size > max_width ? n_size : max_width;
-	
-	std::string base;
-	base.reserve(dotPosition + 2);	
-	base.insert(0, inputFileName, 0, dotPosition);
-	base.append(" (");
-	
-	std::string last_part;
-	last_part.reserve(fmt.size() + 2);
-	last_part.append(").");
-	last_part.append(fmt);
-	
-	size_t i = 1;
-	while (std::filesystem::exists(base + std::to_string(i) + last_part)) ++i;
-	return base + std::to_string(i) + last_part;
+	return base_name;
 }
-
 
 static inline bool cppDownloadFile(const std::string &fileURL, const std::string &oFileName) {
 	return download_file(fileURL, oFileName);
 }
 
-static inline std::string getName(const std::string &url) {
-	return url.substr(url.rfind('/') + 1);
+std::string getName(const std::string &url) {
+	if (url.empty()) return "";
+	
+	auto scheme_pos = url.find("://");
+	size_t start_search = 0;
+	
+	if (scheme_pos != std::string::npos) start_search = scheme_pos + 3;
+	
+	auto fragment_pos = url.find('#', start_search);
+	auto query_pos = url.find('?', start_search);
+	
+	auto path_end = std::min(
+		fragment_pos != std::string::npos ? fragment_pos : url.size(),
+		query_pos != std::string::npos ? query_pos : url.size()
+	);
+	
+	auto pos = url.rfind('/', path_end);
+	
+	if (pos == std::string::npos)
+		return start_search == 0 ? url.substr(0, path_end) : url.substr(start_search, path_end - start_search);
+	
+	
+	auto name_start = pos + 1;
+	if (name_start >= path_end) return "";
+	
+	return url.substr(name_start, path_end - name_start);
 }
 
 static void printError(const std::string &fileURL, const std::string &oFileName) {
@@ -94,19 +130,17 @@ void fileDownload(const std::string &fileURL, const int n, const int maxWidth, c
 void fileDownloadSilently(const std::string &fileURL) {
 	const std::string &oFileName = getOutputFileName(getName(fileURL));
 	if (cppDownloadFile(fileURL, oFileName)) {
-		//static tbb::spin_mutex mtx;
-		//tbb::spin_mutex::scoped_lock lock(mtx);
 		deleteingFile(oFileName);
 	}
 }
 
 void fileDownloadSilently(const std::string &fileURL, const int n, const int maxWidth, const std::string & fmt) {
 	const std::string &oFileName = getOutputFileName(n, maxWidth, fmt);
+	
 	if (cppDownloadFile(fileURL, oFileName)) {
-		//static tbb::spin_mutex mtx;
-		//tbb::spin_mutex::scoped_lock lock(mtx);
 		deleteingFile(oFileName);
 	}
+
 }
 
 
@@ -118,4 +152,9 @@ void downloadFromStringArray(const std::span<const std::string> array) {
 			fileDownload(i);
 		}
 	);
+}
+
+void downloadFromStringArraySerialy(const std::span<const std::string> array) {
+	for (const auto &i: array)
+		fileDownload(i);
 }
