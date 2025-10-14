@@ -17,16 +17,25 @@
 #include "txtproc.hpp"
 #include "argparser.hpp"
 
+#ifndef SCLD_VERSION
+#define SCLD_VERSION "2025.10.14"
+#endif
+
+#ifndef help_txt
 #define help_txt "Simple command-line downloader (scld) is elementary command line application for downloading:\n\
-1. Homogeneous files from URLs with format like:\
-`URL`k.fmt, `URL`(k+1).fmt, `URL`(k+2).fmt, `URL`..., `URL`(N-1).fmt, `URL`N.fmt;\n\
-2. From a file contained the addresses of the files line by line;\n\
-3. Directly file by providing a full address.\n\
+  1. Homogeneous files from URLs with format like:\
+`shared URL part`k.fmt, `shared URL part`(k+1).fmt, `shared URL part`(k+2).fmt, `shared URL part`..., `shared URL part`(N-1).fmt, `shared URL part`N.fmt.\n\
+  2. From a file contained the addresses of the files line by line.\n\
+  3. Directly file by providing a full address.\n\
 Options:\n\
--r or --range\tAfter that option specify arguments: shared part of URL, file format, first and last indexes;\n\
--t or --txt\tAfter that option specify arguments: filename with full URLs written line by line;\n\
--f or --file\tAfter that option specify full URL to downloading file;\n\
--h or --help\tDisplay main information about the software and specific types of command line options.\n"
+  -h or --help\t\tDisplay this information.\n\
+  -r or --range\t\tAfter that option specify arguments: shared part of URL, file format, first and last indexes.\n\
+  -t or --txt\t\tAfter that option specify arguments: text filename with full URLs written line by line.\n\
+  -f or --file\t\tAfter that option specify full URLs downloading files separated by space.\n\
+  -c or --cin\t\tDownloading files from URLs provided via standard input.\n\
+  -v or --version\tDisplay version information.\n"
+#endif
+
 
 int main(int argc, char **argv)
 {
@@ -55,8 +64,12 @@ int main(int argc, char **argv)
 			
 			downloadFromFile(*(argv + 2));
 			
-		} else if (flag == "-h" || flag == "--help"){
+		} else if (flag == "-h" || flag == "--help") {
 			std::cout<< help_txt;
+		} else if (flag == "-c" || flag == "--cin") {
+			downloadFromInput(std::cin);
+		} else if (flag == "-v" || flag == "--version") {
+			std::cout << "scld " << SCLD_VERSION << '\n';
 		} else {
 			throw std::runtime_error("Unknown option \"" + flag + "\" \n");
 		}

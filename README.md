@@ -8,10 +8,12 @@ Simple command-line downloader (scld) is elementary command line application bas
  + directly file by providing a full address.
 
 ### Options
- + `-r` or `--range` after that option specify arguments: part of URL, file format, first and last indexes;  
- + `-t` or `--txt` after that option specify arguments: file name with full URLs written line by line;  
- + `-f` or `--file` after that option specify full URL to downloading file;  
- + `-h` or `--help` display main information about the software and specific types of command line options.
+ + `-r` or `--range` after that option specify arguments: part of URL, file format, first and last indexes.  
+ + `-t` or `--txt` after that option specify arguments: file name with full URLs written line by line.  
+ + `-f` or `--file` after that option specify full URLs downloading files separated by space.  
+ + `-h` or `--help` display main information about the software and specific types of command line options.  
+ + `-c` or `--cin` downloading files from the URLs specified in the standard input stream.  
+ + `-v` or `--version` display version information.
 
 ### Clone and build
 For build project from sources you must install Make, g++, OpenSSL, oneTBB and Boost.  
@@ -51,7 +53,9 @@ scld -f "https://cs13.pikabu.ru/video/2024/08/12/1723441171223051126_a85d8f65_72
 ```
 scld -f "https://cs16.pikabu.ru/s/2025/10/09/19/cmtsjfwl_s0f0d17m0_720x1280.mp4" "https://cs14.pikabu.ru/post_img/big/2023/10/09/9/169686042512661648.jpg" "https://iit.cs.msu.ru/media/media/educational_materials/Operatsionnye_sistemy_vzaimodeystvie_protsessov.pdf" "https://cs19.pikabu.ru/s/2025/08/28/21/snsuxw4p_lg.png" "https://sun9-60.userapi.com/s/v1/ig2/p1ZWwAleO3GQ2Ms3G3elCPtTu6ZM_EV2w4HjVHVcazG7ZeOUTU_g5LbkZunCJ057AVco7dSHoamb4-8vBE8zbVjZ.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280,1440x1440,2560x2560" "https://pk.mpei.ru/docs/campus_map.png"
 ```
-
+```
+cat some_text_file.txt | scld -c
+```
 
 ## TODO list:
 - [ ] Improving handling of command line arguments.

@@ -10,6 +10,82 @@ static size_t getNumLines(const std::string &file_name) {
 	return res;
 }
 
+static inline void trim_whitespace_inplace(std::string& s) {
+	static constexpr const char* whitespace = " \t\n\r\f\v";
+	if (s.empty()) return;
+	if (const auto first = s.find_first_not_of(whitespace); first == std::string::npos) {
+		s.clear();
+	} else {
+		const auto last = s.find_last_not_of(whitespace);
+		const auto len = last - first + 1;
+		if (first > 0 || last < s.size() - 1) {
+			s.assign(s, first, len);
+		}
+	}
+}
+
+
+static std::vector<std::string> inputToStrVec(std::istream& input, size_t &pos) {
+	
+	std::unordered_set<std::string> url_set;
+	std::unordered_set<std::string> name_set;
+	
+	std::vector<std::string> vec1, vec2;
+	
+	
+	vec1.reserve(40);
+	vec2.reserve(20);
+	
+	std::string line;	
+	while (std::getline(input, line)) {
+		trim_whitespace_inplace(line);
+		if (!line.empty()) {
+			if (!url_set.contains(line)) {
+				const std::string name = getName(line);
+				
+				if (!name_set.contains(name)) {
+					name_set.insert(name);
+					vec1.push_back(line);
+				} else {
+					vec2.push_back(line);
+				}
+				url_set.insert(line);
+			}
+		}
+	}
+	
+	url_set.clear();
+	name_set.clear();
+	
+	vec2.shrink_to_fit();
+	
+	const auto vec1s = vec1.size();
+	
+	pos = vec1s;
+	
+	if (const auto vec2s = vec2.size(); vec1.capacity() < vec1s + vec2s) vec1.resize(vec1s + vec2s);
+	
+	vec1.insert(vec1.end(), vec2.begin(), vec2.end());
+	
+	vec2.clear();
+	
+	vec1.shrink_to_fit();
+	return vec1;
+}
+
+void downloadFromInput(std::istream& input) {
+	size_t pos = 0;
+	const std::vector<std::string> vec = inputToStrVec(input, pos);
+	
+	if (vec.empty()) throw std::runtime_error("String vector is empty.\n");
+	
+	const auto vec_s = vec.size();
+	
+	downloadFromStringArray(std::span<const std::string>(vec.data(), std::min(pos, vec_s)));
+	if (pos < vec_s) downloadFromStringArraySerialy(std::span<const std::string>(vec.data() + pos, vec_s));
+}
+
+
 static std::vector<std::string> getStringVec(const std::string &file_name, size_t &pos) {
 	size_t s = getNumLines(file_name);
 	if (s == 0) throw std::runtime_error("File \"" + file_name + "\" is empty.\n");
@@ -29,6 +105,7 @@ static std::vector<std::string> getStringVec(const std::string &file_name, size_
 	while (!fl.eof()) {
 		std::string str;
 		std::getline(fl, str);
+		trim_whitespace_inplace(str);
 		if (!str.empty()) {
 			if (!url_set.contains(str)) {
 				const std::string name = getName(str);
@@ -67,6 +144,8 @@ static std::vector<std::string> getStringVec(const std::string &file_name, size_
 void downloadFromFile(const std::string &file_name) {
 	size_t pos = 0;
 	const std::vector<std::string> vec = getStringVec(file_name, pos);
+	
+	if (vec.empty()) throw std::runtime_error("String vector is empty.\n");
 	
 	const auto vec_s = vec.size();
 	

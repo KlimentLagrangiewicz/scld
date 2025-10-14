@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <string>
 #include <span>
+#include <iostream>
 #include <fstream>
 #include <vector>
 #include <stdexcept>
@@ -18,7 +19,7 @@
 
 #include "cppdownloader.hpp"
 
-
+void downloadFromInput(std::istream& input);
 void downloadFromFile(const std::string &file_name);
 
 #endif
