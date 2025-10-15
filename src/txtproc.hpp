@@ -10,6 +10,8 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
+#include <cstring>
 #include <span>
 #include <iostream>
 #include <fstream>
@@ -19,7 +21,13 @@
 
 #include "cppdownloader.hpp"
 
-void downloadFromInput(std::istream& input);
-void downloadFromFile(const std::string &file_name);
+void downloadFromInput(const char **argv, int begin, int end);
+void downloadFromInput(std::istream& input, const char **argv, int begin, int end);
+
+void downloadFromFile(const char **argv, const int begin, const int end);
+void downloadFromFile(std::istream& input, const char **argv, const int begin, const int end);
+
+std::vector<std::string> getFormats(const std::string_view arg);
+std::vector<std::string> getFormats(const char *arg);
 
 #endif
