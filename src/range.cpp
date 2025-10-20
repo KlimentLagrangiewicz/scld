@@ -36,7 +36,7 @@ static inline int getIntWidth(int n) {
 	if (n == std::numeric_limits<int>::min()) return 11;
 	
 	const int sign = n < 0 ? 1 : 0;
-	unsigned un = n < 0 ? -static_cast<unsigned>(n) : n;
+	const unsigned un = n < 0 ? -static_cast<unsigned>(n) : n;
 	
 	if (un < 10u) return sign + 1;
 	if (un < 100u) return sign + 2;
@@ -79,7 +79,7 @@ void downloadFromRange(const std::string &path, const std::vector<std::string> &
 			[&width, &fmts, &path, &max_output_width](const tbb::blocked_range<int>& range) {
 				for (auto i = range.begin(); i != range.end(); ++i) {
 					for (const auto & fmt: fmts) {
-						const std::string url = getURL(path, i, fmt, width - getIntWidth(i));
+						const auto url = getURL(path, i, fmt, width - getIntWidth(i));
 						fileDownloadSilently(url, i, max_output_width, fmt);
 					}
 				}

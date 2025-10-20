@@ -2,115 +2,108 @@
 
 struct Url {
 	std::string scheme, host, port, target;
-	inline bool https() const { return scheme == "https"; }
+	[[nodiscard]] constexpr bool https() const { return scheme == "https"; }
 };
 
-static Url parse_url(std::string url) {
+static std::optional<Url> parse_url(const std::string& url_str) {
 	Url u;
-	auto pos = url.find("://");
-	if (pos == std::string::npos) throw std::runtime_error("Bad URL: scheme missing");
-	u.scheme = url.substr(0, pos);
-	auto rest = url.substr(pos + 3);
-	auto slash = rest.find('/');
-	auto hostport = slash == std::string::npos ? rest : rest.substr(0, slash);
-	u.target = slash == std::string::npos ? "/" : rest.substr(slash);
-	auto colon = hostport.find(':');
-	if (colon == std::string::npos) {
-		u.host = hostport;
-		u.port = (u.scheme == "https") ? "443" : "80";
+	std::string_view url_view(url_str);
+	
+	auto scheme_end = url_view.find("://");
+	if (scheme_end == std::string_view::npos) return std::nullopt;
+	u.scheme = url_view.substr(0, scheme_end);
+	if (u.scheme != "http" && u.scheme != "https") return std::nullopt;
+	
+	url_view.remove_prefix(scheme_end + 3);
+	
+	const auto authority_end = url_view.find('/');
+	u.target = (authority_end == std::string_view::npos) ? "/" : std::string(url_view.substr(authority_end));
+	const auto authority = (authority_end == std::string_view::npos) ? url_view : url_view.substr(0, authority_end);
+	
+	const auto port_pos = authority.find(':');
+	if (port_pos == std::string_view::npos) {
+		u.host = std::string(authority);
+		u.port = u.https() ? "443" : "80";
 	} else {
-		u.host = hostport.substr(0, colon);
-		u.port = hostport.substr(colon + 1);
+		u.host = std::string(authority.substr(0, port_pos));
+		u.port = std::string(authority.substr(port_pos + 1));
 	}
-	if (u.scheme != "http" && u.scheme != "https")
-		throw std::runtime_error("Only http/https are supported");
+	
 	return u;
 }
 
-bool download_file(const std::string& url_str, const std::string& out_path) {
+template<class Stream>
+static http::response<http::file_body> perform_request(Stream& stream, const Url& url, const std::string& out_path) {
+	http::response_parser<http::file_body> parser;
+	
+	beast::error_code ec;
+	parser.get().body().open(out_path.c_str(), beast::file_mode::write, ec);
+	if (ec) throw beast::system_error{ec};
+	
+	auto host_header = url.host;
+	if ((!url.https() && url.port != "80") || (url.https() && url.port != "443")) {
+		host_header += ":" + url.port;
+	}
+	
+	http::request<http::empty_body> req{http::verb::get, url.target, 11};
+	req.set(http::field::host, host_header);
+	req.set(http::field::user_agent, std::string("asio-beast-downloader/") + BOOST_BEAST_VERSION_STRING);
+	req.set(http::field::connection, "close");
+	
+	http::write(stream, req);
+	
+	beast::flat_buffer buffer;
+	http::read(stream, buffer, parser);
+	
+	return parser.release();
+}
+
+constexpr int MAX_REDIRECTS = 2;
+
+bool download_file(const std::string& url_str, const std::string& out_path, int redirect_count) {
+	if (redirect_count > MAX_REDIRECTS) return true;
 	try {
-		auto url = parse_url(url_str);
+		auto url_opt = parse_url(url_str);
+		if (!url_opt) return true;
+		const auto& url = *url_opt;
+		
 		net::io_context ioc;
+		tcp::resolver resolver{ioc};
+		const auto results = resolver.resolve(url.host, url.port);
 		
-		auto host_header = url.host;
-		if ((!url.https() && url.port != "80") || (url.https() && url.port != "443")) host_header += ":" + url.port;
-		
-		http::request<http::empty_body> req{http::verb::get, url.target, 11};
-		req.set(http::field::host, host_header);
-		req.set(http::field::user_agent, std::string("asio-beast-downloader/") + BOOST_BEAST_VERSION_STRING);
-		req.set(http::field::accept, "*/*");
-		req.set(http::field::accept_encoding, "identity");
-		req.set(http::field::connection, "close");
-		
-		beast::error_code ec;
-		beast::flat_buffer buffer;
+		http::response<http::file_body> res;
 		
 		if (!url.https()) {
-			// HTTP
-			tcp::resolver resolver{ioc};
 			beast::tcp_stream stream{ioc};
-			
-			auto results = resolver.resolve(url.host, url.port);
-			stream.connect(results, ec);
-			if (ec) return true;
-			
-			http::write(stream, req, ec);
-			if (ec) return true;
-			
-			http::response_parser<http::file_body> parser;
-			parser.get().body().open(out_path.c_str(), beast::file_mode::write, ec);
-			if (ec) return true;
-			
-			http::read(stream, buffer, parser, ec);
-			if (ec) return true;
-			
-			auto const& res = parser.get();
-			if (res.result() != http::status::ok) return true;
-			
-			stream.socket().shutdown(tcp::socket::shutdown_both, ec);
-			
-			return false;
+			stream.connect(results);
+			res = perform_request(stream, url, out_path);
+			stream.socket().shutdown(tcp::socket::shutdown_both);
 		} else {
-			// HTTPS (TLS)
 			ssl::context ctx{ssl::context::tls_client};
-
 			ctx.set_default_verify_paths();
-			
+			ctx.set_verify_mode(ssl::verify_peer);
 			beast::ssl_stream<beast::tcp_stream> stream{ioc, ctx};
-
-			stream.set_verify_mode(ssl::verify_peer);
-			stream.set_verify_callback(ssl::host_name_verification(url.host));
 			
 			if(!SSL_set_tlsext_host_name(stream.native_handle(), url.host.c_str())) return true;
 			
-			tcp::resolver resolver{ioc};
-			auto results = resolver.resolve(url.host, url.port, ec);
-			if (ec) return true;
-			
-			beast::get_lowest_layer(stream).connect(results, ec);
-			if (ec) return true;
-			
-			stream.handshake(ssl::stream_base::client, ec);
-			if (ec) return true;
-			
-			http::write(stream, req, ec);
-			if (ec) return true;
-			
-			http::response_parser<http::file_body> parser;
-			parser.get().body().open(out_path.c_str(), beast::file_mode::write, ec);
-			if (ec) return true;
-			
-			http::read(stream, buffer, parser, ec);
-			if (ec) return true;
-			
-			auto const& res = parser.get();
-			if (res.result() != http::status::ok) return true;
-			
-			stream.shutdown(ec);
-			
-			return false;
+			get_lowest_layer(stream).connect(results);
+			stream.handshake(ssl::stream_base::client);
+			res = perform_request(stream, url, out_path);
+			stream.shutdown();
 		}
-	} catch (...) {
+		
+		const auto status_code = res.result();
+		const auto status_class = http::to_status_class(status_code);
+		
+		if (status_class == http::status_class::redirection) {
+			if (res.find(http::field::location) == res.end()) return true;
+			
+			std::string new_url = std::string(res[http::field::location]);
+			return download_file(new_url, out_path, redirect_count + 1);
+		}
+		
+		return status_code != http::status::ok;
+	} catch (const std::exception& e) {
 		return true;
 	}
 }

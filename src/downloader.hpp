@@ -20,6 +20,8 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include <string_view>
+#include <optional>
 
 
 namespace beast = boost::beast;
@@ -29,6 +31,6 @@ namespace ssl   = boost::asio::ssl;
 using tcp       = net::ip::tcp;
 
 
-bool download_file(const std::string& url_str, const std::string& out_path);
+bool download_file(const std::string& url_str, const std::string& out_path, int redirect_count = 0);
 
 #endif

@@ -1,7 +1,7 @@
 #include "txtproc.hpp"
 
 static inline void trim_whitespace_inplace(std::string& s) {
-	static constexpr const char* whitespace = " \t\n\r\f\v";
+	static constexpr const char* whitespace = " \t\n\r\f\v\"'";
 	if (s.empty()) return;
 	if (const auto first = s.find_first_not_of(whitespace); first == std::string::npos) {
 		s.clear();
@@ -31,15 +31,15 @@ static std::vector<std::string> inputToStrVec(std::istream& input, const char **
 		
 		if (!line.empty()) {
 			if (!url_set.contains(line)) {
-				const std::string name = getName(line);
-				
-				if (!name_set.contains(name)) {
-					name_set.insert(name);
-					vec1.push_back(line);
-				} else {
-					vec2.push_back(line);
+				if (const auto name = getName(line); !name.empty()) {
+					url_set.insert(line);
+					if (!name_set.contains(name)) {
+						name_set.insert(name);
+						vec1.push_back(line);
+					} else {
+						vec2.push_back(line);
+					}
 				}
-				url_set.insert(line);
 			}
 		}
 	}
@@ -50,15 +50,15 @@ static std::vector<std::string> inputToStrVec(std::istream& input, const char **
 		trim_whitespace_inplace(line);
 		if (!line.empty()) {
 			if (!url_set.contains(line)) {
-				const std::string name = getName(line);
-				
-				if (!name_set.contains(name)) {
-					name_set.insert(name);
-					vec1.push_back(line);
-				} else {
-					vec2.push_back(line);
+				if (const auto name = getName(line); !name.empty()) {
+					url_set.insert(line);
+					if (!name_set.contains(name)) {
+						name_set.insert(name);
+						vec1.push_back(line);
+					} else {
+						vec2.push_back(line);
+					}
 				}
-				url_set.insert(line);
 			}
 		}
 	}
@@ -165,28 +165,71 @@ static inline size_t getNumLines(const std::string &file_name) {
 	return res;
 }
 
-static std::vector<std::string> getStringVec(const std::string &file_name, size_t &pos) {
+static std::vector<std::string> getFilesNames(const char **argv, const int begin, const int end, size_t &sum) {
 	
+	std::unordered_set<std::string> fn_set;
+	std::vector<std::string> fn_vec;
+	
+	fn_vec.reserve(end - begin);
+	
+	sum = 0;
+	
+	for (int i = begin; i < end; ++i) {
+		const std::string fn(argv[i]);
+		if (!fn.empty()) {
+			if (const auto numl = getNumLines(fn); numl > 0 && !fn_set.contains(fn)) {
+				fn_set.insert(fn);
+				fn_vec.push_back(fn);
+				++sum;
+			}
+		}
+	}
+	fn_set.clear();
+	
+	fn_vec.shrink_to_fit();
+	return fn_vec;
+}
+
+static std::vector<std::string> getFilesNames(std::istream& input, const char **argv, const int begin, const int end, size_t &sum) {
+	
+	std::unordered_set<std::string> fn_set;
+	std::vector<std::string> fn_vec;
+	
+	fn_vec.reserve(end - begin);
+	
+	sum = 0;
+	
+	for (int i = begin; i < end; ++i) {
+		const std::string fn(argv[i]);
+		if (!fn.empty()) {
+			if (const auto numl = getNumLines(fn); numl > 0 && !fn_set.contains(fn)) {
+				fn_set.insert(fn);
+				fn_vec.push_back(fn);
+				++sum;
+			}
+		}
+	}
+	
+	std::string line;
+	while (std::getline(input, line)) {
+		if (!line.empty()) {
+			if (const auto numl = getNumLines(line); numl > 0 && !fn_set.contains(line)) {
+				fn_set.insert(line);
+				fn_vec.push_back(line);
+				++sum;
+			}
+		}
+	}
+	
+	fn_set.clear();
+	
+	fn_vec.shrink_to_fit();
+	return fn_vec;
+}
+
+static void fileReading(const std::string &file_name, std::vector<std::string>& vec1, std::vector<std::string>& vec2, std::unordered_set<std::string>& url_set, std::unordered_set<std::string>& name_set) {
 	std::ifstream fl(file_name, std::ios_base::in);
-	if (!fl.is_open()) {
-		pos = 0;
-		return {};
-	}
-	
-	size_t s = getNumLines(file_name);
-	if (s == 0) {
-		pos = 0;
-		return {};
-	}
-	
-	std::unordered_set<std::string> url_set;
-	std::unordered_set<std::string> name_set;
-	
-	std::vector<std::string> vec1;
-	vec1.reserve(s);
-	
-	std::vector<std::string> vec2;
-	vec2.reserve(s);
+	if (!fl.is_open()) return;
 	
 	while (!fl.eof()) {
 		std::string str;
@@ -194,20 +237,36 @@ static std::vector<std::string> getStringVec(const std::string &file_name, size_
 		trim_whitespace_inplace(str);
 		if (!str.empty()) {
 			if (!url_set.contains(str)) {
-				const std::string name = getName(str);
-				
-				if (!name_set.contains(name)) {
-					name_set.insert(name);
-					vec1.push_back(str);
-				} else {
-					vec2.push_back(str);
-				}
 				url_set.insert(str);
+				
+				if (const auto name = getName(str); !name.empty()) {
+					if (!name_set.contains(name)) {
+						name_set.insert(name);
+						vec1.push_back(str);
+					} else {
+						vec2.push_back(str);
+					}
+				}
 			}
 		}
 	}
 	fl.close();
+}
+
+static std::vector<std::string> extractURLsFromFiles(const std::span<const std::string> files, size_t reserved, size_t &pos) {
 	
+	std::vector<std::string> vec1, vec2;
+	
+	vec1.reserve(reserved);
+	vec2.reserve(reserved);
+	
+	std::unordered_set<std::string> url_set, name_set;
+	
+	for (const auto &file_name: files) {
+		if (!file_name.empty()) {
+			fileReading(file_name, vec1, vec2, url_set, name_set);
+		}
+	}
 	url_set.clear();
 	name_set.clear();
 	
@@ -227,45 +286,26 @@ static std::vector<std::string> getStringVec(const std::string &file_name, size_
 	return vec1;
 }
 
-
-static void downloadFromFile(const std::string &file_name) {
-	size_t pos = 0;
-	const std::vector<std::string> vec = getStringVec(file_name, pos);
-	
-	if (vec.empty()) return;
-	
-	const auto vec_s = vec.size();
-	
-	downloadFromStringArray(std::span<const std::string>(vec.data(), std::min(pos, vec_s)));
-	if (pos < vec_s) downloadFromStringArraySerialy(std::span<const std::string>(vec.data() + pos, vec_s));
-}
-
 void downloadFromFile(const char **argv, const int begin, const int end) {
-	for (int i = begin; i < end; ++i) {
-		const char* const argv_i = argv[i];
-		if (*argv_i != '\0') {
-			downloadFromFile(argv_i);
-		}
-		
-	}
+	size_t sum, pos;
+	const auto fns = getFilesNames(argv, begin, end, sum);
+	
+	const auto urls = extractURLsFromFiles(fns, sum, pos);
+	
+	const auto vec_s = urls.size();
+	downloadFromStringArray(std::span<const std::string>(urls.data(), std::min(pos, vec_s)));
+	if (pos < vec_s) downloadFromStringArraySerialy(std::span<const std::string>(urls.data() + pos, vec_s));
 }
 
 void downloadFromFile(std::istream& input, const char **argv, const int begin, const int end) {
-	for (int i = begin; i < end; ++i) {
-		const char* const argv_i = argv[i];
-		if (*argv_i != '\0') {
-			downloadFromFile(argv_i);
-		}
-		
-	}
+	size_t sum, pos;
+	const auto fns = getFilesNames(input, argv, begin, end, sum);
 	
-	std::string line;
-	while (std::getline(input, line)) {
-		if (!line.empty()) {
-			downloadFromFile(line);
-		}
-	}
-
+	const auto urls = extractURLsFromFiles(fns, sum, pos);
+	
+	const auto vec_s = urls.size();
+	downloadFromStringArray(std::span<const std::string>(urls.data(), std::min(pos, vec_s)));
+	if (pos < vec_s) downloadFromStringArraySerialy(std::span<const std::string>(urls.data() + pos, vec_s));
 }
 
 std::vector<std::string> getFormats(const std::string_view arg) {
@@ -274,7 +314,7 @@ std::vector<std::string> getFormats(const std::string_view arg) {
 	std::unordered_set<std::string> fmt_set;
 	
 	std::string added_str;
-	for (const auto &c: arg) {
+	for (const auto c: arg) {
 		if (c == ',') {
 			if (!added_str.empty()) {
 				if (!fmt_set.contains(added_str)) {
@@ -310,7 +350,7 @@ std::vector<std::string> getFormats(const char* const arg) {
 	
 	std::string added_str;
 	for (std::size_t i = 0; i < s; ++i) {
-		const auto &c = arg[i];
+		const auto c = arg[i];
 		if (c == ',') {
 			if (!added_str.empty()) {
 				if (!fmt_set.contains(added_str)) {

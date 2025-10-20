@@ -1,17 +1,17 @@
 #if defined(_WIN32) || defined(_WIN64)
 	#ifndef WIN32_LEAN_AND_MEAN
-	#define WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
 	#endif
 	
 	#include <winsock2.h>
 	#include <io.h>
 	
 	#ifndef isatty
-	#define isatty _isatty
+		#define isatty _isatty
 	#endif
 	
 	#ifndef fileno
-	#define fileno _fileno
+		#define fileno _fileno
 	#endif
 #else
 	#include <unistd.h>
@@ -27,7 +27,7 @@
 #include "txtproc.hpp"
 
 #ifndef SCLD_VERSION
-#define SCLD_VERSION "2025.10.15"
+	#define SCLD_VERSION "2025.10.20"
 #endif
 
 #ifndef help_txt
