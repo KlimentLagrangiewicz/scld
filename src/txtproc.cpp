@@ -308,7 +308,7 @@ void downloadFromFile(std::istream& input, const char **argv, const int begin, c
 	if (pos < vec_s) downloadFromStringArraySerialy(std::span<const std::string>(urls.data() + pos, vec_s));
 }
 
-std::vector<std::string> getFormats(const std::string_view arg) {
+std::vector<std::string> getSuffixes(const std::string_view arg) {
 	std::vector<std::string> res;
 	res.reserve(std::count(arg.begin(), arg.end(), ',') + 1);
 	std::unordered_set<std::string> fmt_set;
@@ -341,7 +341,7 @@ std::vector<std::string> getFormats(const std::string_view arg) {
 	return res;
 }
 
-std::vector<std::string> getFormats(const char* const arg) {
+std::vector<std::string> getSuffixes(const char* const arg) {
 	const auto s = strlen(arg);
 	
 	std::vector<std::string> res;

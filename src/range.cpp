@@ -1,22 +1,21 @@
 #include "range.hpp"
 
 
-static inline std::string getURL(std::string_view path, const int i, std::string_view fmt, const int diff) {
+static inline std::string getURL(std::string_view path, const int i, std::string_view suffixus, const int diff) {
 	std::string result;
 	if (diff <= 0) {
-		result.reserve(path.size() + 11 + fmt.size() + 2);
+		result.reserve(path.size() + 11 + suffixus.size());
 		result.append(path);
 		result.append(std::to_string(i));
 	} else {
 		const auto num_str = std::to_string(i);
-		result.reserve(path.size() + diff + num_str.size() + fmt.size() + 2);
+		result.reserve(path.size() + diff + num_str.size() + suffixus.size());
 		result.append(path);
 		result.append(diff, '0');
 		result.append(num_str);
 	}
 	
-	result.push_back('.');
-	result.append(fmt);
+	result.append(suffixus);
 	return result;
 }
 
@@ -51,36 +50,36 @@ static inline int getIntWidth(int n) {
 }
 
 
-void downloadFromRange(const std::string &path, const std::string &fmt, const std::string &sfirst, const std::string &slast) {
+void downloadFromRange(const std::string &path, const std::string &suffixes, const std::string &sfirst, const std::string &slast) {
 	int first = std::stoi(sfirst), last = std::stoi(slast);
 	const int width = mySwap(first, last) ? slast.size() : sfirst.size();
 	const int max_output_width = getIntWidth(last);
 	tbb::parallel_for(
 		tbb::blocked_range<int>(first, last + 1),
-		[&width, &fmt, &path, &max_output_width](const tbb::blocked_range<int>& range) {
+		[&width, &suffixes, &path, &max_output_width](const tbb::blocked_range<int>& range) {
 			for (auto i = range.begin(); i != range.end(); ++i) {
-				const std::string url = getURL(path, i, fmt, width - getIntWidth(i));
-				fileDownloadSilently(url, i, max_output_width, fmt);
+				const std::string url = getURL(path, i, suffixes, width - getIntWidth(i));
+				fileDownloadSilently(url, i, max_output_width, suffixes);
 			}
 		}
 	);
 }
 
-void downloadFromRange(const std::string &path, const std::vector<std::string> &fmts, const std::string &sfirst, const std::string &slast) {
-	if (fmts.empty()) throw std::runtime_error("fmts vector can't be empty");
-	if (fmts.size() < 2) {
-		downloadFromRange(path, fmts[0], sfirst, slast);
+void downloadFromRange(const std::string &path, const std::vector<std::string> &suffixes, const std::string &sfirst, const std::string &slast) {
+	if (suffixes.empty()) throw std::runtime_error("suffixes vector can't be empty");
+	if (suffixes.size() < 2) {
+		downloadFromRange(path, suffixes[0], sfirst, slast);
 	} else {
 		int first = std::stoi(sfirst), last = std::stoi(slast);
 		const int width = mySwap(first, last) ? slast.size() : sfirst.size();
 		const int max_output_width = getIntWidth(last);
 		tbb::parallel_for(
 			tbb::blocked_range<int>(first, last + 1),
-			[&width, &fmts, &path, &max_output_width](const tbb::blocked_range<int>& range) {
+			[&width, &suffixes, &path, &max_output_width](const tbb::blocked_range<int>& range) {
 				for (auto i = range.begin(); i != range.end(); ++i) {
-					for (const auto & fmt: fmts) {
-						const auto url = getURL(path, i, fmt, width - getIntWidth(i));
-						fileDownloadSilently(url, i, max_output_width, fmt);
+					for (const auto & suffixus: suffixes) {
+						const auto url = getURL(path, i, suffixus, width - getIntWidth(i));
+						fileDownloadSilently(url, i, max_output_width, suffixus);
 					}
 				}
 			}

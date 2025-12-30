@@ -3,7 +3,7 @@ Simple command-line downloader
 
 ## About application
 Simple command-line downloader (scld) is elementary command line application based on [Boost.Beast](https://github.com/boostorg/beast) for downloading:
- + homogeneous files from URLs with format like: `shared URL part`k.fmt, `shared URL part`(k+1).fmt, `shared URL part`(k+2).fmt, `shared URL part`..., `shared URL part`(N-1).fmt, `shared URL part`N.fmt;  
+ + homogeneous files from URLs with format like: `shared URL part`k`suffix`, `shared URL part`(k+1)`suffix`, `shared URL part`(k+2)`suffix`, `shared URL part`..., `shared URL part`(N-1)`suffix`, `shared URL part`N`suffix`;  
  + from a file contained the addresses of the files line by line;  
  + directly file by providing a full address.
 
@@ -41,10 +41,14 @@ If building was ok, you can find executable file in `bin` subdirectory.
 
 ### Examples
 ```
-scld -r "https://www.mangaread.org/wp-content/uploads/WP-manga/data/manga_60b4a21e01c9b/11e6c5d005eb13e15cc7a6ff7dfba10b/" "jpeg" "3" "17"
+scld -r "https://www.mangaread.org/wp-content/uploads/WP-manga/data/manga_60b4a21e01c9b/11e6c5d005eb13e15cc7a6ff7dfba10b/" ".jpeg" "3" "17"
 ```
 ```
-scld -r "https://hpc-education.unn.ru/files/courses/XeonPhi/Lection" "pdf" "01" "07"
+scld -r "https://hpc-education.unn.ru/files/courses/XeonPhi/Lection" ".pdf" "01" "07"
+```
+```
+scld -r "https://one-way.work/auto/112/96/48/" "_res.png" "1" "15"
+
 ```
 ```
 scld -t "https://cs13.pikabu.ru/video/2024/08/12/1723441171223051126_a85d8f65_720x720.webm"

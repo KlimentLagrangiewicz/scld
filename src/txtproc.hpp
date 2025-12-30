@@ -3,8 +3,8 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 	#ifndef WIN32_LEAN_AND_MEAN
-	#define WIN32_LEAN_AND_MEAN
-	#include <winsock2.h>
+		#define WIN32_LEAN_AND_MEAN
+		#include <winsock2.h>
 	#endif
 #endif
 
@@ -27,7 +27,7 @@ void downloadFromInput(std::istream& input, const char **argv, int begin, int en
 void downloadFromFile(const char **argv, const int begin, const int end);
 void downloadFromFile(std::istream& input, const char **argv, const int begin, const int end);
 
-std::vector<std::string> getFormats(const std::string_view arg);
-std::vector<std::string> getFormats(const char *arg);
+std::vector<std::string> getSuffixes(const std::string_view arg);
+std::vector<std::string> getSuffixes(const char *arg);
 
 #endif

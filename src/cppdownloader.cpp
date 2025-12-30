@@ -10,12 +10,13 @@ static std::string getOutputFileName(const std::string &inputFileName) {
 	return base + std::to_string(i) + fmt;
 }
 
-static std::string getOutputFileName(const int n, const int maxWidth, const std::string& fmt) {
+
+static std::string getOutputFileName(const int n, const int maxWidth, const std::string& suffixus) {
 	const auto n_str = std::to_string(n);
 	const auto n_size = n_str.size();
 	const auto max_width = static_cast<std::string::size_type>(maxWidth);
 	
-	const auto base_size = (n_size > max_width ? n_size : max_width) + fmt.size() + 1;
+	const auto base_size = (n_size > max_width ? n_size : max_width) + suffixus.size();
 	
 	std::string base_name;
 	base_name.reserve(base_size);
@@ -26,18 +27,18 @@ static std::string getOutputFileName(const int n, const int maxWidth, const std:
 		base_name.append(max_width - n_size, '0');
 		base_name.append(n_str);
 	}
-	base_name.push_back('.');
-	base_name.append(fmt);
+	
+	base_name.append(suffixus);
 	
 	if (!std::filesystem::exists(base_name)) return base_name;
 	
 	const auto prefix_size = n_size > max_width ? n_size : max_width;
 	std::string prefix;
-	prefix.reserve(prefix_size + 3);
+	prefix.reserve(prefix_size + 2);
 	prefix.append(base_name, 0, prefix_size);
 	prefix.append(" (");
 	
-	const auto suffix_size = fmt.size() + 3;
+	const auto suffix_size = suffixus.size() + 2;
 	const auto total_base_size = prefix.size() + suffix_size;
 	
 	std::array<char, 21> num_buf{};
@@ -47,15 +48,15 @@ static std::string getOutputFileName(const int n, const int maxWidth, const std:
 		candidate.reserve(total_base_size + 14);
 		candidate.append(prefix);
 		
-		auto [ptr, ec] = std::to_chars(num_buf.data(), num_buf.data() + num_buf.size(), i);
+		const auto [ptr, ec] = std::to_chars(num_buf.data(), num_buf.data() + num_buf.size(), i);
 		if (ec == std::errc()) {
 			candidate.append(num_buf.data(), ptr);
 		} else {
 			candidate.append(std::to_string(i));
 		}
 		
-		candidate.append(").");
-		candidate.append(fmt);
+		candidate.append(")");
+		candidate.append(suffixus);
 		
 		if (!std::filesystem::exists(candidate)) return candidate;
 	}
@@ -112,8 +113,8 @@ void fileDownload(const std::string &fileURL) {
 	}
 }
 
-void fileDownload(const std::string &fileURL, const int n, const int maxWidth, const std::string & fmt) {
-	const auto oFileName = getOutputFileName(n, maxWidth, fmt);
+void fileDownload(const std::string &fileURL, const int n, const int maxWidth, const std::string & suffixus) {
+	const auto oFileName = getOutputFileName(n, maxWidth, suffixus);
 	if (cppDownloadFile(fileURL, oFileName)) {
 		static tbb::spin_mutex mtx;
 		tbb::spin_mutex::scoped_lock lock(mtx);
@@ -127,8 +128,8 @@ void fileDownloadSilently(const std::string &fileURL) {
 		std::filesystem::remove(oFileName);
 }
 
-void fileDownloadSilently(const std::string &fileURL, const int n, const int maxWidth, const std::string & fmt) {
-	const auto oFileName = getOutputFileName(n, maxWidth, fmt);
+void fileDownloadSilently(const std::string &fileURL, const int n, const int maxWidth, const std::string & suffixus) {
+	const auto oFileName = getOutputFileName(n, maxWidth, suffixus);
 	
 	if (cppDownloadFile(fileURL, oFileName))
 		std::filesystem::remove(oFileName);
