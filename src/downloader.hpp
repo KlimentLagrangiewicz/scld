@@ -31,6 +31,6 @@ namespace ssl   = boost::asio::ssl;
 using tcp       = net::ip::tcp;
 
 
-bool download_file(const std::string& url_str, const std::string& out_path, int redirect_count = 0);
+bool download_file(const std::string& url_str, const std::string& out_path, const int redirect_count = 0);
 
 #endif

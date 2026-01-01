@@ -8,7 +8,7 @@ Simple command-line downloader (scld) is elementary command line application bas
  + directly file by providing a full address.
 
 ### Options
- + `-r` or `--range` after that option specify arguments: part of URL, file format, first and last indexes.  
+ + `-r` or `--range` after that option specify arguments: shared part of URL, shared suffix, first and last indexes.  
  + `-t` or `--txt` downloads files from URLs provided as command-line arguments (fstarting from the second one) and standard input.  
  + `-f` or `--file` downloads files from URLs listed in text files specified via command-line arguments (from the second onward) and standard input.  
  + `-h` or `--help` display main information about the software and specific types of command line options.  
@@ -48,7 +48,6 @@ scld -r "https://hpc-education.unn.ru/files/courses/XeonPhi/Lection" ".pdf" "01"
 ```
 ```
 scld -r "https://one-way.work/auto/112/96/48/" "_res.png" "1" "15"
-
 ```
 ```
 scld -t "https://cs13.pikabu.ru/video/2024/08/12/1723441171223051126_a85d8f65_720x720.webm"

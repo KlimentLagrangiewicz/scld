@@ -71,25 +71,25 @@ static inline bool cppDownloadFile(const std::string &fileURL, const std::string
 std::string getName(const std::string &url) {
 	if (url.empty()) return "";
 	
-	auto scheme_pos = url.find("://");
+	const auto scheme_pos = url.find("://");
 	size_t start_search = 0;
 	
 	if (scheme_pos != std::string::npos) start_search = scheme_pos + 3;
 	
-	auto fragment_pos = url.find('#', start_search);
-	auto query_pos = url.find('?', start_search);
+	const auto fragment_pos = url.find('#', start_search);
+	const auto query_pos = url.find('?', start_search);
 	
 	auto path_end = std::min(
 		fragment_pos != std::string::npos ? fragment_pos : url.size(),
 		query_pos != std::string::npos ? query_pos : url.size()
 	);
 	
-	auto pos = url.rfind('/', path_end);
+	const auto pos = url.rfind('/', path_end);
 	
 	if (pos == std::string::npos)
 		return start_search == 0 ? url.substr(0, path_end) : url.substr(start_search, path_end - start_search);
 	
-	auto name_start = pos + 1;
+	const auto name_start = pos + 1;
 	if (name_start >= path_end) return "";
 	
 	return url.substr(name_start, path_end - name_start);

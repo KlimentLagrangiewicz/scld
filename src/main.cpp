@@ -27,13 +27,13 @@
 #include "txtproc.hpp"
 
 #ifndef SCLD_VERSION
-	#define SCLD_VERSION "v2025.12.30"
+	#define SCLD_VERSION "v2026.01.01"
 #endif
 
 #ifndef help_txt
-#define help_txt "Simple command-line downloader (scld) is elementary command line application for downloading:\n\
+	#define help_txt "Simple command-line downloader (scld) is elementary command line application for downloading:\n\
   1. Homogeneous files from URLs with format like:\
-`shared URL part`k.fmt, `shared URL part`(k+1)`suffix`, `shared URL part`(k+2)`suffix`, `shared URL part`..., `shared URL part`(N-1)`suffix`, `shared URL part`N`suffix`.\n\
+`shared URL part`k`suffix`, `shared URL part`(k+1)`suffix`, `shared URL part`(k+2)`suffix`, `shared URL part`...`suffix`, `shared URL part`(N-1)`suffix`, `shared URL part`N`suffix`.\n\
   2. From a file contained the addresses of the files line by line.\n\
   3. Directly file by providing a full address.\n\
 Options:\n\
@@ -68,19 +68,17 @@ int main(int argc, char **argv)
 			
 		} else if (flag == "-f" || flag == "--file") {
 			
-			if (hasStdinData()) {
+			if (hasStdinData())
 				downloadFromFile(std::cin, const_cast<const char**>(argv), 2, argc);
-			} else {
+			else
 				downloadFromFile(const_cast<const char**>(argv), 2, argc);
-			}
 			
 		} else if (flag == "-t" || flag == "--txt") {
 			
-			if (hasStdinData()) {
+			if (hasStdinData())
 				downloadFromInput(std::cin, const_cast<const char**>(argv), 2, argc);
-			} else {
+			else
 				downloadFromInput(const_cast<const char**>(argv), 2, argc);
-			}
 			
 		} else if (flag == "-h" || flag == "--help") {
 			std::cout<< help_txt;

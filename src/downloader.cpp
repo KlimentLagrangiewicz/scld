@@ -9,7 +9,7 @@ static std::optional<Url> parse_url(const std::string& url_str) {
 	Url u;
 	std::string_view url_view(url_str);
 	
-	auto scheme_end = url_view.find("://");
+	const auto scheme_end = url_view.find("://");
 	if (scheme_end == std::string_view::npos) return std::nullopt;
 	u.scheme = url_view.substr(0, scheme_end);
 	if (u.scheme != "http" && u.scheme != "https") return std::nullopt;
@@ -60,10 +60,10 @@ static http::response<http::file_body> perform_request(Stream& stream, const Url
 
 constexpr int MAX_REDIRECTS = 2;
 
-bool download_file(const std::string& url_str, const std::string& out_path, int redirect_count) {
+bool download_file(const std::string& url_str, const std::string& out_path, const int redirect_count) {
 	if (redirect_count > MAX_REDIRECTS) return true;
 	try {
-		auto url_opt = parse_url(url_str);
+		const auto url_opt = parse_url(url_str);
 		if (!url_opt) return true;
 		const auto& url = *url_opt;
 		
